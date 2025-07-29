@@ -1,0 +1,1 @@
+import{d as e,j as t,c as s,o as c,k as n,M as _}from"./index-DZmJwjI8.js";const a={class:"home w-full h-full flex items-center justify-center pb-[10%]"},l=e({name:"Index"}),p=e({...l,setup(r){return(d,i)=>{const o=t("Vue3FlipClock");return c(),s("div",a,[n(o,{size:1.4})])}}}),m=_(p,[["__scopeId","data-v-c97d94b9"]]);export{m as default};

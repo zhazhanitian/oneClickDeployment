@@ -1,0 +1,1 @@
+import{T as r}from"./index-DZmJwjI8.js";const n=t=>r({url:"/api/admin/industry",method:"get",params:t}),s=t=>r({url:"/api/admin/industry/"+t,method:"get"}),u=t=>r({url:"/api/admin/industry",method:"post",data:t}),e=t=>r({url:"/api/admin/industry/"+t._id,method:"put",data:t}),a=t=>r({url:"/api/admin/industry/"+t,method:"delete"});export{u as a,a as d,s as g,n as l,e as u};

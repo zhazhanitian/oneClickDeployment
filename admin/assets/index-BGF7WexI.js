@@ -1,0 +1,1 @@
+import{_ as o}from"./index.vue_vue_type_script_setup_true_lang-CiRCI5Qj.js";import{d as r,r as t,c,o as l,k as i,bz as m,e as p}from"./index-DZmJwjI8.js";const k=r({__name:"index",setup(_){const e=t("/admin/applications");return(f,n)=>{const s=o;return l(),c("div",null,[i(s,{src:p(e),"onUpdate:src":n[0]||(n[0]=a=>m(e)?e.value=a:null)},null,8,["src"])])}}});export{k as default};

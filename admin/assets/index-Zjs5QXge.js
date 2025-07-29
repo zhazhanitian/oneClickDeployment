@@ -1,0 +1,1 @@
+import{T as t}from"./index-DZmJwjI8.js";const s=e=>t({url:"/api/admin/menuList",method:"get",params:e}),r=e=>t({url:"/system/menu/"+e,method:"get"}),u=()=>t({url:"/api/admin/menuList",method:"get"}),a=e=>t({url:"/system/menu/tenantPackageMenuTreeselect/"+e,method:"get"}),m=e=>t({url:"/system/menu/"+e,method:"delete"});export{a,m as d,r as g,s as l,u as t};
