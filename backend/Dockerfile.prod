@@ -1,19 +1,74 @@
-# NodeJS Version 16
-FROM node:16.18-buster-slim
+# 多阶段构建 - 构建阶段
+FROM node:18-alpine AS builder
 
-# Copy Dir
-COPY . ./app
-
-# Work to Dir
+# 设置工作目录
 WORKDIR /app
 
-# Install Node Package
-RUN npm install --legacy-peer-deps
+# 安装构建依赖
+RUN apk add --no-cache python3 make g++ curl
 
-# Set Env
-ENV NODE_ENV production
+# 复制包管理文件
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
 
+# 安装pnpm
+RUN npm install -g pnpm
+
+# 安装依赖
+RUN pnpm install --frozen-lockfile
+
+# 复制源代码
+COPY . .
+
+# 构建应用
+RUN pnpm run build
+
+# 生产阶段
+FROM node:18-alpine AS production
+
+# 创建应用用户
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -S appuser -u 1001 -G appgroup
+
+# 安装运行时依赖
+RUN apk add --no-cache \
+    curl \
+    tini \
+    && rm -rf /var/cache/apk/*
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制包管理文件
+COPY package*.json ./
+COPY pnpm-lock.yaml ./
+
+# 安装pnpm并安装生产依赖
+RUN npm install -g pnpm && \
+    pnpm install --frozen-lockfile --prod && \
+    npm cache clean --force && \
+    pnpm store prune
+
+# 从构建阶段复制构建后的文件
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/ecosystem.config.js ./
+
+# 创建必要的目录
+RUN mkdir -p logs uploads templates && \
+    chown -R appuser:appgroup /app
+
+# 切换到应用用户
+USER appuser
+
+# 暴露端口
 EXPOSE 3000
 
-# Cmd script
-CMD ["npm", "run", "start"]
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:3000/health || exit 1
+
+# 使用tini作为init进程
+ENTRYPOINT ["/sbin/tini", "--"]
+
+# 启动应用
+CMD ["node", "dist/server.js"]
