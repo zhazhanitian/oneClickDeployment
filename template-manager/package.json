@@ -1,0 +1,24 @@
+{
+  "name": "aigc-template-manager",
+  "version": "1.0.0",
+  "description": "AIGC平台模板管理服务",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "archiver": "^5.3.1",
+    "unzipper": "^0.10.11",
+    "axios": "^1.10.0",
+    "fs-extra": "^11.1.1",
+    "path": "^0.12.7",
+    "child_process": "^1.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "author": "AIGC Platform",
+  "license": "MIT"
+}

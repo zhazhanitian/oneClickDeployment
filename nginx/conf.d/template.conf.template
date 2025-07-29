@@ -1,0 +1,62 @@
+# 用户端域名配置模板
+# 这个文件会被后端API动态生成和管理
+
+server {
+    listen 80;
+    server_name ${DOMAIN_NAME};
+    
+    # 安全头
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # 如果有域名后缀，处理带后缀的路径
+    ${SUFFIX_LOCATION_BLOCK}
+
+    # 默认根路径处理
+    ${ROOT_LOCATION_BLOCK}
+
+    # 静态资源处理
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        root /usr/share/nginx/html/templates/${TEMPLATE_ID};
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # API代理（如果模板需要）
+    location /api/ {
+        proxy_pass http://backend:3000/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # 传递模板信息
+        proxy_set_header X-Template-ID ${TEMPLATE_ID};
+        proxy_set_header X-Domain-Suffix ${DOMAIN_SUFFIX};
+    }
+
+    # 错误页面
+    error_page 404 /404.html;
+    error_page 500 502 503 504 /50x.html;
+    
+    location = /404.html {
+        root /usr/share/nginx/html/templates/${TEMPLATE_ID};
+        internal;
+    }
+    
+    location = /50x.html {
+        root /usr/share/nginx/html/templates/${TEMPLATE_ID};
+        internal;
+    }
+
+    # 访问日志
+    access_log /var/log/nginx/${DOMAIN_NAME}.access.log main;
+    error_log /var/log/nginx/${DOMAIN_NAME}.error.log warn;
+}
+
+# HTTPS 配置（如果有SSL证书）
+${HTTPS_SERVER_BLOCK}
